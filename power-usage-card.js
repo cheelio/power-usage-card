@@ -43,8 +43,8 @@ class PowerUsageCard extends HTMLElement {
     const entityNames = config.entities.map(x => x.name);
     const entityData = hassEntities.map(x => x.state);
 
-    card.header = config.title ? config.title : 'Power usage graph';  
-    
+    card.header = config.title ? config.title : 'Power usage graph';
+
     if (config.total_power_usage){
         const totalEntity =  hass.states[config.total_power_usage]
         const total = (totalEntity.attributes.unit_of_measurement == 'kW') ? totalEntity.state * 1000 : totalEntity.state;
@@ -60,7 +60,16 @@ class PowerUsageCard extends HTMLElement {
             responsive: true,
             maintainAspectRatio: false,
             animation: { duration: 0 },
-            legend: { position: 'bottom',  display: true },
+            legend: { 
+                position: 'bottom',  
+                display: true,
+                labels: {
+                   filter: function(legendItem, data) {
+                        const emptyIndexes = data.datasets[0].data.reduce((arr, e, i) => ((e == 0) && arr.push(i), arr), [])
+                        return !emptyIndexes.includes(legendItem.index);
+                   }
+                }
+             },
             hover: { mode: 'index' },
             plugins: {colorschemes: { scheme: 'brewer.Paired12' } }
         }
@@ -73,4 +82,5 @@ class PowerUsageCard extends HTMLElement {
 }
 
 customElements.define('power-usage-card', PowerUsageCard);
+
 
