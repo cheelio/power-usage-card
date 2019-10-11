@@ -40,11 +40,11 @@ class PowerUsageCard extends HTMLElement {
     const canvas = root.getElementById("cnv");
     const ctx = canvas.getContext('2d');
     const hassEntities = config.entities.map(x => hass.states[x.entity]);
-    const entityNames = config.entities.map(x => x.name);
-    const entityData = hassEntities.map(x => x.state);
+    var entityNames = config.entities.map(x => x.name);
+    var entityData = hassEntities.map(x => x.state);
 
-    card.header = config.title ? config.title : 'Power usage graph';
-
+    card.header = config.title ? config.title : 'Power usage graph';  
+    
     if (config.total_power_usage){
         const totalEntity =  hass.states[config.total_power_usage]
         const total = (totalEntity.attributes.unit_of_measurement == 'kW') ? totalEntity.state * 1000 : totalEntity.state;
@@ -52,6 +52,10 @@ class PowerUsageCard extends HTMLElement {
         entityData.push(total - measured)
         entityNames.push(config.unknownText ? config.unknownText : 'Unknown');
     }
+
+    const emptyIndexes = entityData.reduce((arr, e, i) => ((e == 0) && arr.push(i), arr), [])
+    entityData = entityData.filter((element, index, array) => !emptyIndexes.includes(index));
+    entityNames = entityNames.filter((element, index, array) => !emptyIndexes.includes(index));
 
     const doughnutChart = new Chart(ctx, {
         type: 'doughnut',
@@ -62,13 +66,7 @@ class PowerUsageCard extends HTMLElement {
             animation: { duration: 0 },
             legend: { 
                 position: 'bottom',  
-                display: true,
-                labels: {
-                   filter: function(legendItem, data) {
-                        const emptyIndexes = data.datasets[0].data.reduce((arr, e, i) => ((e == 0) && arr.push(i), arr), [])
-                        return !emptyIndexes.includes(legendItem.index);
-                   }
-                }
+                display: true
              },
             hover: { mode: 'index' },
             plugins: {colorschemes: { scheme: 'brewer.Paired12' } }
