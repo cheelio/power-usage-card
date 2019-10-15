@@ -23,8 +23,8 @@ class PowerUsageCard extends HTMLElement {
     card.id ='ha-card';
     content.id = 'content';
     canvas.id = 'cnv';
-    canvas.style.height = '480px';
-    canvas.style.width = '480px';
+    content.style.height = '480px';
+    canvas.height=480;
     card.appendChild(content);
     card.appendChild(style);
     content.appendChild(canvas);
@@ -42,9 +42,8 @@ class PowerUsageCard extends HTMLElement {
     const hassEntities = config.entities.map(x => hass.states[x.entity]);
     var entityNames = config.entities.map(x => x.name);
     var entityData = hassEntities.map(x => x.state);
+    card.header = config.title ? config.title : 'Power usage graph';
 
-    card.header = config.title ? config.title : 'Power usage graph';  
-    
     if (config.total_power_usage){
         const totalEntity =  hass.states[config.total_power_usage]
         const total = (totalEntity.attributes.unit_of_measurement == 'kW') ? totalEntity.state * 1000 : totalEntity.state;
@@ -59,19 +58,33 @@ class PowerUsageCard extends HTMLElement {
 
     const doughnutChart = new Chart(ctx, {
         type: 'doughnut',
-        data: { datasets: [{ data: entityData }], labels: entityNames },
-        options: {
+        data: {
+          labels: [],
+          datasets: [{
+            data: [],
+            borderWidth: 1,
+            borderColor:'#00c0ef',
+            label: 'liveCount',
+    }]
+  },
+       options: {
             responsive: true,
-            maintainAspectRatio: false,
+            maintainAspectRatio: true,
             animation: { duration: 0 },
-            legend: { 
-                position: 'bottom',  
+            legend: {
+                position: 'bottom',
                 display: true
              },
             hover: { mode: 'index' },
             plugins: {colorschemes: { scheme: 'brewer.Paired12' } }
         }
     });
+
+  var getData = function() {
+    doughnutChart.data =  { datasets: [{ data: entityData }], labels: entityNames };
+    doughnutChart.update();
+  };
+  getData();
   }
 
   getCardSize() {
@@ -80,5 +93,3 @@ class PowerUsageCard extends HTMLElement {
 }
 
 customElements.define('power-usage-card', PowerUsageCard);
-
-
