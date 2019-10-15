@@ -1,6 +1,6 @@
 # Lovelace power usage graph card
 
-This card will display a doughnut chard that represents your current power Usage. 
+This card will display a doughnut chard that gives insights in your current power usage. 
 
 ## Usage
 1. Add plugin .js as a module:
