@@ -30,4 +30,4 @@ This card will display a doughnut chard that represents your current power Usage
 
 
 
-![alt text](https://raw.githubusercontent.com/cheelio/power-usage-card/master/power-usage-card.png)
+![screenshot](https://raw.githubusercontent.com/cheelio/power-usage-card/master/power-usage-card.png)
